@@ -1,7 +1,8 @@
-import React, { memo, useCallback } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import React, { useEffect, useState, memo, useCallback } from 'react';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { getNoticiaById } from '../services/api';
 
 const Paragraph = memo(({ text }) => (
   <Text style={styles.content}>{text}</Text>
@@ -10,15 +11,62 @@ const Paragraph = memo(({ text }) => (
 export default function NewsDetailScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { news } = route.params;
+  const { newsId } = route.params; // ✔ ahora recibimos SOLO EL ID
+
+  const [loading, setLoading] = useState(true);
+  const [news, setNews] = useState(null);
 
   const handleGoBack = useCallback(() => {
-    // Usa goBack() correctamente
     navigation.goBack();
   }, [navigation]);
 
-  const paragraphs = news.content ? news.content.split('\n') : [];
+  // -------------------------
+  //   ✔ Cargar noticia real
+  // -------------------------
+  useEffect(() => {
+    async function loadNews() {
+      setLoading(true);
+      const result = await getNoticiaById(newsId);
 
+      if (result && result.length > 0) {
+        setNews(result[0]);
+      }
+
+      setLoading(false);
+    }
+
+    loadNews();
+  }, [newsId]);
+
+  // -------------------------
+  //   ✔ Loading
+  // -------------------------
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0a325aff" />
+      </View>
+    );
+  }
+
+  // -------------------------
+  //   ✔ Error si no carga
+  // -------------------------
+  if (!news) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={{ fontSize: 18, color: 'red' }}>No se pudo cargar la noticia.</Text>
+      </View>
+    );
+  }
+
+  const paragraphs = news.content
+    ? news.content.split('\n')
+    : [];
+
+  // -------------------------
+  //   ✔ Render final
+  // -------------------------
   return (
     <View style={styles.container}>
       <ScrollView
@@ -26,10 +74,9 @@ export default function NewsDetailScreen() {
         showsVerticalScrollIndicator={false}
       >
         <Image 
-          source={{ uri: news.image }} 
-          style={styles.newsImage} 
+          source={{ uri: news.image }}
+          style={styles.newsImage}
           resizeMode="cover"
-          fadeDuration={0}
         />
 
         <View style={styles.contentContainer}>
@@ -46,7 +93,6 @@ export default function NewsDetailScreen() {
         <TouchableOpacity 
           style={styles.backButton} 
           onPress={handleGoBack}
-          activeOpacity={0.7}
         >
           <Ionicons name="arrow-back" size={28} color="#fff" />
         </TouchableOpacity>
@@ -54,6 +100,10 @@ export default function NewsDetailScreen() {
     </View>
   );
 }
+
+// -------------------------
+//    ✔ Estilos originales
+// -------------------------
 
 const styles = StyleSheet.create({
   container: {
@@ -72,7 +122,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     backgroundColor: '#fff',
-    marginTop: -20, 
+    marginTop: -20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
@@ -109,10 +159,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#0a325aff',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 6, 
-    shadowColor: '#000', 
+    elevation: 6,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });

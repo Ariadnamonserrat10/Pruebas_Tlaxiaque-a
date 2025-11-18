@@ -5,7 +5,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // Pantallas principales
 import SplishScreen from './src/Pages/SplishScreen';
 import HomeScreen from './src/Pages/HomeScreen';
-import NewsDetailScreen from './src/Pages/NewsDetailsScreen';
+
+// Aquí va el nombre EXACTO de tu archivo
+import NewsDetailsScreen from './src/Pages/NewsDetailsScreen';
+
 import RadioScreen from './src/Pages/RadioScreen';
 import NotificationsScreen from './src/Pages/NotificationsScreen';
 
@@ -24,25 +27,28 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator 
-        screenOptions={{ 
+      <Stack.Navigator
+        screenOptions={{
           headerShown: false,
-          animation: 'none', // Desactiva animaciones globalmente
+          animation: 'none',
         }}
         initialRouteName="Splash"
       >
         {/* Pantallas principales */}
         <Stack.Screen name="Splash" component={SplishScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen 
-          name="NewsDetail" 
-          component={NewsDetailScreen} 
-          options={{ 
-            animation: 'none', // Sin animación al entrar y salir
+
+        <Stack.Screen
+          name="NewsDetail"
+          component={NewsDetailsScreen}  // 👈 NOMBRE REAL DEL ARCHIVO
+          options={{
+            animation: 'none',
           }}
         />
+
         <Stack.Screen name="Radio" component={RadioScreen} />
         <Stack.Screen name="Notifications" component={NotificationsScreen} />
+
         {/* Pantallas de configuración */}
         <Stack.Screen name="Configuración" component={ConfiguracionScreen} />
         <Stack.Screen name="Notificaciones" component={NotificacionesScreen} />
