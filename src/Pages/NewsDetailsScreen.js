@@ -13,11 +13,11 @@ export default function NewsDetailScreen() {
   const { news } = route.params;
 
   const handleGoBack = useCallback(() => {
-    // Usa goBack() correctamente
     navigation.goBack();
   }, [navigation]);
 
-  const paragraphs = news.content ? news.content.split('\n') : [];
+  // Separa por saltos de línea, si los hay
+  const paragraphs = news.summary ? news.summary.split('\n') : [];
 
   return (
     <View style={styles.container}>
@@ -36,9 +36,11 @@ export default function NewsDetailScreen() {
           <Text style={styles.title}>{news.title}</Text>
           <Text style={styles.date}>{news.date}</Text>
 
-          {paragraphs.map((p, index) => (
-            <Paragraph key={index} text={p} />
-          ))}
+          {paragraphs.length > 0 ? (
+            paragraphs.map((p, index) => <Paragraph key={index} text={p} />)
+          ) : (
+            <Paragraph text="Sin descripción disponible" />
+          )}
         </View>
       </ScrollView>
 
@@ -56,14 +58,8 @@ export default function NewsDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContainer: {
-    paddingBottom: 120,
-    flexGrow: 1,
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
+  scrollContainer: { paddingBottom: 120, flexGrow: 1 },
   newsImage: {
     width: '100%',
     height: 250,
@@ -78,23 +74,9 @@ const styles = StyleSheet.create({
     padding: 20,
     minHeight: 400,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#222',
-  },
-  date: {
-    fontSize: 14,
-    color: '#999',
-    marginBottom: 15,
-  },
-  content: {
-    fontSize: 16,
-    color: '#333',
-    lineHeight: 26,
-    marginBottom: 15,
-  },
+  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 10, color: '#222' },
+  date: { fontSize: 14, color: '#999', marginBottom: 15 },
+  content: { fontSize: 16, color: '#333', lineHeight: 26, marginBottom: 15 },
   navbar: {
     position: 'absolute',
     bottom: Platform.OS === 'ios' ? 30 : 20,
@@ -109,7 +91,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0a325aff',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 6, 
+    elevation: 6,
     shadowColor: '#000', 
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,

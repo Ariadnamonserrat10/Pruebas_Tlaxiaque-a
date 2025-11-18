@@ -47,10 +47,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 45, // 🔹 espacio fijo superior para bajarlo visualmente
+    paddingTop: 20, //  espacio fijo superior para bajarlo visualmente
     paddingBottom: 10,
     backgroundColor: '#FFFFFF',
-    height: 115, // 🔹 altura total controlada (más equilibrada)
+    height: 80, //  altura total controlada (más equilibrada)
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#ddd',
   },
