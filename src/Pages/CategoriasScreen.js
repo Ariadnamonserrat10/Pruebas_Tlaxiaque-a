@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import BottomNav from '../Components/BottomNav';
+import { apiFetch } from "../services/api";
 
-const API_BASE = 'http://192.168.20.112/Pruebas/wp-json/noticias/v1';
+r
+const API_BASE = 'http://192.168.0.106/webcurso/wp-json/noticias/v1';
 
 export default function CategoryScreen({ route, navigation }) {
   const category = route?.params?.category || 'Sin categoría';
@@ -11,6 +13,7 @@ export default function CategoryScreen({ route, navigation }) {
 
   useEffect(() => {
     fetch(`${API_BASE}/noticias?categoria=${category}`)
+    // apiFetch(`${API_BASE}/noticias?categoria=${category}`)
       .then((res) => res.json())
       .then((data) => setNoticias(data))
       .catch((err) => console.log('ERROR noticias:', err))
