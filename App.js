@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import NetInfo from '@react-native-community/netinfo'; //  IMPORTANTE
 
 // Pantallas principales
 import SplishScreen from './src/Pages/SplishScreen';
@@ -20,6 +21,8 @@ import PreguntasScreen from './src/Pages/PreguntasScreen';
 import SocialScreen from './src/Pages/SocialScreen';
 
 const Stack = createNativeStackNavigator();
+  const [isConnected, setIsConnected] = useState(true); // ESTADO DE INTERNET
+
 
 export default function App() {
   return (
@@ -52,7 +55,29 @@ export default function App() {
         <Stack.Screen name="Contactar Soporte" component={SoporteScreen} />
         <Stack.Screen name="Preguntas Frecuentes" component={PreguntasScreen} />
         <Stack.Screen name="Social" component={SocialScreen} />
+            {/* MENSAJE SI NO HAY INTERNET */}
+              {!isConnected && (
+                <View style={styles.noInternetBanner}>
+                  <Text style={styles.noInternetText}>No tienes conexión a Internet</Text>
+                </View>
+              )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles =  StyleSheet.create({
+   noInternetBanner: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    padding: 10,
+    backgroundColor: "#0c0c0cff",
+    alignItems: "center",
+    zIndex: 999,
+  },
+  noInternetText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+})

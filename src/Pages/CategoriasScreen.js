@@ -4,7 +4,9 @@ import BottomNav from '../Components/BottomNav';
 import { apiFetch } from "../services/api";
 
 r
-const API_BASE = 'http://192.168.0.106/webcurso/wp-json/noticias/v1';
+// const API_BASE = 'http://192.168.0.106/webcurso/wp-json/noticias/v1';
+  const API_BASE = 'http://192.168.20.66/webcurso/wp-json/noticias/v1';
+
 
 export default function CategoryScreen({ route, navigation }) {
   const category = route?.params?.category || 'Sin categoría';

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Modal, TextInput, Animated, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import NetInfo from '@react-native-community/netinfo'; // 🟢 IMPORTANTE
+import NetInfo from '@react-native-community/netinfo'; //  IMPORTANTE
 import AppBar from '../Components/AppBar';
 import BottomNav from '../Components/BottomNav';
 
@@ -21,12 +21,14 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentAdIndex, setCurrentAdIndex] = useState(0);
 
-  const [isConnected, setIsConnected] = useState(true); // 🟢 ESTADO DE INTERNET
+  const [isConnected, setIsConnected] = useState(true); // ESTADO DE INTERNET
 
   const navigation = useNavigation();
   const flatListRef = useRef(null);
 
-  const API_BASE = 'http://192.168.0.106/webcurso/wp-json/noticias/v1';
+  // const API_BASE = 'http://192.168.0.106/webcurso/wp-json/noticias/v1';
+  const API_BASE = 'http://192.168.20.66/webcurso/wp-json/noticias/v1';
+
 
   //  DETECTAR INTERNET
   useEffect(() => {
