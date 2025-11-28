@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import AppBar from '../Components/AppBar';
 import BottomNav from '../Components/BottomNav';
+import NetInfo from '@react-native-community/netinfo';
 
 const { width, height } = Dimensions.get('window');
 const ITEM_WIDTH = width * 0.18;
@@ -19,11 +20,14 @@ export default function HomeScreen() {
   const [searchVisible, setSearchVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentAdIndex, setCurrentAdIndex] = useState(0);
+  const [isConnected, setIsConnected] = useState(true);
+  const [showConnectionMessage, setShowConnectionMessage] = useState(false);
+  const [connectionMessage, setConnectionMessage] = useState('');
   const navigation = useNavigation();
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef(null);
 
-  const API_BASE = 'http://192.168.20.112/Pruebas/wp-json/noticias/v1';
+  const API_BASE = 'http://192.168.218.71/Pruebas/wp-json/noticias/v1';
 
   // Anuncios simulados con colores vibrantes
   const ads = [
@@ -106,8 +110,45 @@ export default function HomeScreen() {
     setSearchVisible(false);
   };
 
+  // escucha del estado de red (import dinámico con fallback a ping si no está NetInfo)
+  useEffect(() => {
+    let timeoutId = null;
+    const unsubscribe = NetInfo.addEventListener(state => {
+      const online = !!(state.isConnected && (state.isInternetReachable !== false));
+      setIsConnected(online);
+
+      if (!online) {
+        setConnectionMessage('Sin conexión a internet');
+        setShowConnectionMessage(true);
+        // mantener el banner hasta que vuelva la conexión
+      } else {
+        setConnectionMessage('Conexión restaurada');
+        setShowConnectionMessage(true);
+        // ocultar automáticamente después de 2.5s
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          setShowConnectionMessage(false);
+        }, 2500);
+      }
+    });
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      unsubscribe();
+    };
+  }, []);
+
   return (
     <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      {showConnectionMessage && (
+        <View style={[
+            styles.connectionBanner,
+            connectionMessage.includes('restaurada') ? styles.connectionRestored : styles.offlineBar
+          ]}>
+          <Text style={styles.offlineText}>{connectionMessage}</Text>
+        </View>
+      )}
+
       {/* Sección de Anuncios - Más pequeña y colorida */}
       <View style={[styles.adsContainer, { backgroundColor: ads[currentAdIndex].gradient[0] }]}>
         <TouchableOpacity activeOpacity={0.7} style={styles.adsTouchable}>
@@ -250,6 +291,16 @@ export default function HomeScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* mensaje inferior si no hay conexión */}
+      {showConnectionMessage && (
+        <View style={[
+            styles.connectionBanner,
+            connectionMessage.includes('restaurada') ? styles.connectionRestored : styles.offlineBar
+          ]}>
+          <Text style={styles.offlineText}>{connectionMessage}</Text>
+        </View>
+      )}
 
       <BottomNav activeTab="home" />
     </View>
@@ -472,5 +523,48 @@ const styles = StyleSheet.create({
     color: '#999',
     fontSize: 16,
     marginTop: 10,
+  },
+  offlineBar: {
+    // ahora es un estilo sólo de color (se aplica junto a connectionBanner)
+    backgroundColor: '#e74c3c',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    minHeight: 36,
+  },
+  offlineText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: width * 0.034,
+  },
+  connectionBanner: {
+    position: 'absolute',
+    left: '6%',
+    right: '6%',
+    top: AD_HEIGHT + height * 0.015,
+    // padding vertical se controla en los variantes (offlineBar / connectionRestored)
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 10,
+    zIndex: 9999,
+    // pequeña elevación extra para sombras en Android/iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  connectionRestored: {
+    backgroundColor: '#27ae60', // verde
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 10,
   },
 });
